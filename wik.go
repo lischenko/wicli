@@ -5,7 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	// "os"
+	"net/url"
+	"os"
 )
 
 const (
@@ -14,13 +15,14 @@ const (
 )
 
 func main() {
-	// if len(os.Args) != 2 {
-	// 	log.Fatal(fmt.Sprintf("Usage: %s article", os.Args[0]))
-	// }
+	if len(os.Args) < 2 {
+		log.Fatal(fmt.Sprintf("Usage: %s article", os.Args[0]))
+	}
 
-	// article := os.Args[1]
+	article0 := os.Args[1]
 
-	article := "Experiment"
+	article := url.QueryEscape(article0)
+
 	url := fmt.Sprintf(Api, article)
 
 	resp, err := http.Get(url)
