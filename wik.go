@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,8 +11,8 @@ import (
 )
 
 const (
-	Api    = "http://en.wikipedia.org/w/api.php?format=xml&action=query&titles=%s&prop=revisions&rvprop=content"
-	Direct = "http://en.wikipedia.org/wiki/%s"
+	Api    = "http://%s.wikipedia.org/w/api.php?format=xml&action=query&titles=%s&prop=revisions&rvprop=content"
+	Direct = "http://%s.wikipedia.org/wiki/%s"
 )
 
 func main() {
@@ -19,11 +20,9 @@ func main() {
 		log.Fatal(fmt.Sprintf("Usage: %s article", os.Args[0]))
 	}
 
-	article0 := os.Args[1]
+	article := url.QueryEscape(os.Args[1])
 
-	article := url.QueryEscape(article0)
-
-	url := fmt.Sprintf(Api, article)
+	url := fmt.Sprintf(Api, "ru", article)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -38,5 +37,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%s", body)
+	type ApiResult struct {
+		XMLName xml.Name
+		Content string `xml:"query>pages>page>revisions>rev"`
+	}
+
+	v := ApiResult{}
+	errXml := xml.Unmarshal(body, &v)
+	if errXml != nil {
+		log.Fatal(errXml)
+	}
+
+	fmt.Printf("%v", v.Content)
 }
+
+// func parseXml
