@@ -37,18 +37,22 @@ func main() {
 		log.Fatal(err)
 	}
 
-	type ApiResult struct {
-		XMLName xml.Name
-		Content string `xml:"query>pages>page>revisions>rev"`
-	}
+	apiRes := parseXml(body)
+	fmt.Printf("%v", apiRes.Content)
+}
 
-	v := ApiResult{}
-	errXml := xml.Unmarshal(body, &v)
+type Article struct {
+	XMLName xml.Name
+	Content string `xml:"query>pages>page>revisions>rev"`
+}
+
+func parseXml(xmlBytes []byte) Article {
+	a := Article{}
+
+	errXml := xml.Unmarshal(xmlBytes, &a)
 	if errXml != nil {
 		log.Fatal(errXml)
 	}
 
-	fmt.Printf("%v", v.Content)
+	return a
 }
-
-// func parseXml
