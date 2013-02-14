@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"retriever"
 )
 
@@ -22,7 +23,19 @@ func main() {
 	body := retriever.Retrieve(cfg, article)
 
 	apiRes := parseXml(body)
-	fmt.Printf("%v", apiRes.Content)
+
+	out := apiRes.Content
+
+	if cfg.CleanupLinks {
+		//clean-up named wikipedia links
+		re := regexp.MustCompile("\\[\\[(.*?)\\|(.*?)\\]\\]")
+		out = re.ReplaceAllString(out, "$2")
+
+		//clean-up direct wikipedia links
+		re = regexp.MustCompile("\\[\\[(.*?)\\]\\]")
+		out = re.ReplaceAllString(out, "$1")
+	}
+	fmt.Printf("%v", out)
 }
 
 type Article struct {
