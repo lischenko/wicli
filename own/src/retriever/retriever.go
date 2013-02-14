@@ -9,9 +9,14 @@ import (
 	"net/url"
 )
 
-func Retrieve(conf config.Config, article string) []byte {
+const (
+	api = "http://%s.wikipedia.org/w/api.php?format=xml&action=query&titles=%s&prop=revisions&rvprop=content"
+)
+
+func Retrieve(cfg config.Config, article string) []byte {
 	articleEscaped := url.QueryEscape(article)
-	url := fmt.Sprintf(conf.UrlTemplate, conf.Lang, articleEscaped)
+
+	url := fmt.Sprintf(api, cfg.Lang, articleEscaped)
 
 	resp, err := http.Get(url)
 	if err != nil {

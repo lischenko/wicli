@@ -1,24 +1,26 @@
 package config
 
-const (
-	Api    = "http://%s.wikipedia.org/w/api.php?format=xml&action=query&titles=%s&prop=revisions&rvprop=content"
-	Direct = "http://%s.wikipedia.org/wiki/%s"
-)
+import "flag"
 
 type Config struct {
-	UrlTemplate   string
-	Lang          string
-	StripBrackets bool
+	Lang       string
+	StripLinks bool
+}
+
+var cfg Config
+
+func init() {
+	flag.StringVar(&cfg.Lang, "lang", "en", "Language of the Wikipedia to be queried")
+	flag.BoolVar(&cfg.StripLinks, "stripLinks", true, "Wheter or not to strip links")
+
+	flag.Parse()
 }
 
 func PrintUsage() {
-	print("Usage:\n\twicli article\n")
+	print("Usage:\n\twicli [flags] article\nFlags and their default values:\n")
+	flag.PrintDefaults()
 }
 
-func getDefaultConfig() Config {
-	return Config{UrlTemplate: Api, Lang: "ru", StripBrackets: true}
-}
-
-func GetConfig(args []string) Config {
-	return getDefaultConfig() //for now
+func GetConfig() Config {
+	return cfg
 }

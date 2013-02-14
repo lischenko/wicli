@@ -15,11 +15,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	conf := config.GetConfig(os.Args)
+	cfg := config.GetConfig()
 
-	article := os.Args[1]
+	article := os.Args[len(os.Args)-1]
 
-	body := retriever.Retrieve(conf, article)
+	body := retriever.Retrieve(cfg, article)
+
 	apiRes := parseXml(body)
 	fmt.Printf("%v", apiRes.Content)
 }
