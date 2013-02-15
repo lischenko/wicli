@@ -35,6 +35,12 @@ func main() {
 		re = regexp.MustCompile("\\[\\[(.*?)\\]\\]")
 		out = re.ReplaceAllString(out, "$1")
 	}
+
+	if cfg.StripCategories {
+		re := regexp.MustCompile("\\{\\{(.*?)\\}\\}\\n?")
+		out = re.ReplaceAllString(out, "")
+	}
+
 	fmt.Printf("%v", out)
 }
 

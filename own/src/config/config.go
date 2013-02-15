@@ -3,9 +3,9 @@ package config
 import "flag"
 
 type Config struct {
-	Lang         string
-	CleanupLinks bool
-	// StripCategories bool
+	Lang            string
+	CleanupLinks    bool
+	StripCategories bool
 }
 
 var cfg Config
@@ -13,6 +13,7 @@ var cfg Config
 func init() {
 	flag.StringVar(&cfg.Lang, "lang", "en", "Language of the Wikipedia to be queried")
 	flag.BoolVar(&cfg.CleanupLinks, "cleanupLinks", true, "Wheter or not to clean-up links")
+	flag.BoolVar(&cfg.StripCategories, "stripCategories", true, "Wheter or not to strip categories")
 
 	flag.Parse()
 }
