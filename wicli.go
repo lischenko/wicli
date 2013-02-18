@@ -2,12 +2,10 @@ package main
 
 import (
 	"config"
-	"encoding/xml"
 	"fmt"
-	"log"
 	"os"
-	"regexp"
-	"retriever"
+	prc "processing"
+	ret "retriever"
 )
 
 func main() {
@@ -18,53 +16,13 @@ func main() {
 
 	cfg := config.GetConfig()
 
-	article := os.Args[len(os.Args)-1]
+	query := os.Args[len(os.Args)-1]
 
-	body := retriever.Retrieve(cfg, article)
+	article := ret.Retrieve(cfg, query)
 
 	if !cfg.Raw {
-		out := postProcess(body, cfg)
-		fmt.Printf("%v", out)
-	} else {
-		fmt.Printf("%s", body)
-	}
-}
-
-func postProcess(body []byte, cfg config.Config) string {
-	apiRes := parseXml(body)
-
-	out := apiRes.Content
-
-	if cfg.CleanupLinks {
-		//clean-up named wikipedia links
-		re := regexp.MustCompile("\\[\\[(.*?)\\|(.*?)\\]\\]")
-		out = re.ReplaceAllString(out, "$2")
-
-		//clean-up direct wikipedia links
-		re = regexp.MustCompile("\\[\\[(.*?)\\]\\]")
-		out = re.ReplaceAllString(out, "$1")
+		article = prc.PostProcess(article, cfg)
 	}
 
-	if cfg.StripCategories {
-		re := regexp.MustCompile("\\{\\{(.*?)\\}\\}\\n?")
-		out = re.ReplaceAllString(out, "")
-	}
-
-	return out
-}
-
-type Article struct {
-	XMLName xml.Name
-	Content string `xml:"query>pages>page>revisions>rev"`
-}
-
-func parseXml(xmlBytes []byte) Article {
-	a := Article{}
-
-	errXml := xml.Unmarshal(xmlBytes, &a)
-	if errXml != nil {
-		log.Fatal(errXml)
-	}
-
-	return a
+	fmt.Printf("%s", article)
 }
