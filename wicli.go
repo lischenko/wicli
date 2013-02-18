@@ -22,6 +22,15 @@ func main() {
 
 	body := retriever.Retrieve(cfg, article)
 
+	if !cfg.Raw {
+		out := postProcess(body, cfg)
+		fmt.Printf("%v", out)
+	} else {
+		fmt.Printf("%s", body)
+	}
+}
+
+func postProcess(body []byte, cfg config.Config) string {
 	apiRes := parseXml(body)
 
 	out := apiRes.Content
@@ -41,7 +50,7 @@ func main() {
 		out = re.ReplaceAllString(out, "")
 	}
 
-	fmt.Printf("%v", out)
+	return out
 }
 
 type Article struct {

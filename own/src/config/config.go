@@ -4,6 +4,7 @@ import "flag"
 
 type Config struct {
 	Lang            string
+	Raw             bool
 	CleanupLinks    bool
 	StripCategories bool
 }
@@ -14,12 +15,13 @@ func init() {
 	flag.StringVar(&cfg.Lang, "lang", "en", "Language of the Wikipedia to be queried")
 	flag.BoolVar(&cfg.CleanupLinks, "cleanupLinks", true, "Wheter or not to clean-up links")
 	flag.BoolVar(&cfg.StripCategories, "stripCategories", true, "Wheter or not to strip categories")
+	flag.BoolVar(&cfg.Raw, "raw", false, "Supresses all post-processing")
 
 	flag.Parse()
 }
 
 func PrintUsage() {
-	print("Usage:\n\twicli [flags] article\nFlags and their default values:\n")
+	print("Usage:\n\twicli [flags] article\n\nFlags and their default values:\n")
 	flag.PrintDefaults()
 }
 
