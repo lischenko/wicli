@@ -13,10 +13,10 @@ const (
 	api = "http://%s.wikipedia.org/w/api.php?format=xml&action=query&titles=%s&prop=revisions&rvprop=content"
 )
 
-func Retrieve(cfg config.Config, article string) string {
-	articleEscaped := url.QueryEscape(article)
+func Retrieve(cfg config.Config, query string) string {
+	queryEscaped := url.QueryEscape(query)
 
-	url := fmt.Sprintf(api, cfg.Lang, articleEscaped)
+	url := fmt.Sprintf(api, cfg.Lang, queryEscaped)
 
 	resp, err := http.Get(url)
 	if err != nil {
