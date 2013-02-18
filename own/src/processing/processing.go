@@ -17,6 +17,10 @@ func PostProcess(content string, cfg config.Config) string {
 
 	out := parsed.Content
 
+	if cfg.StripInterwiki {
+		out = stripInterwiki(out)
+	}
+
 	if cfg.CleanupLinks {
 		//clean-up named wikipedia links
 		re := regexp.MustCompile("\\[\\[(.*?)\\|(.*?)\\]\\]")
