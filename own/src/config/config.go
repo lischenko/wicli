@@ -4,10 +4,11 @@ import "flag"
 
 type Config struct {
 	Lang            string
-	Raw             bool
 	CleanupLinks    bool
 	StripCategories bool
+	StripComments   bool
 	StripInterwiki  bool
+	Raw             bool
 }
 
 var cfg Config
@@ -18,6 +19,7 @@ func init() {
 	flag.BoolVar(&cfg.StripCategories, "stripCategories", true, "Whether or not to strip categories")
 	flag.BoolVar(&cfg.Raw, "raw", false, "Supresses all post-processing")
 	flag.BoolVar(&cfg.StripInterwiki, "stripInterwiki", true, "Whether or not to strip interwiki (language) links")
+	flag.BoolVar(&cfg.StripComments, "stripComments", true, "Whether or not to strip comments")
 
 	flag.Parse()
 }

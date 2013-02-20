@@ -33,18 +33,36 @@ func PostProcess(content string, cfg config.Config) (ArticleMeta, string) {
 		out = stripInterwiki(out)
 	}
 
+	if cfg.StripCategories {
+		re := regexp.MustCompile("\\[\\[Category:(.*?)\\]\\]\\n?")
+		out = re.ReplaceAllString(out, "")
+	}
+
 	if cfg.CleanupLinks {
 		//clean-up named wikipedia links
-		re := regexp.MustCompile("\\[\\[(.*?)\\|(.*?)\\]\\]")
+		re := regexp.MustCompile("\\[\\[([^\\]]*?)\\|([^\\[]*?)\\]\\]")
 		out = re.ReplaceAllString(out, "$2")
 
 		//clean-up direct wikipedia links
 		re = regexp.MustCompile("\\[\\[(.*?)\\]\\]")
 		out = re.ReplaceAllString(out, "$1")
+
+		//clean-up named external links
+		re = regexp.MustCompile("\\[(.*?) (.*?)\\]")
+		out = re.ReplaceAllString(out, "$2")
+
+		//clean-up external links
+		re = regexp.MustCompile("\\[(.*?)\\]")
+		out = re.ReplaceAllString(out, "$1")
 	}
 
-	if cfg.StripCategories {
-		re := regexp.MustCompile("\\{\\{(.*?)\\}\\}\\n?")
+	// if cfg.StripMacros {
+	// 	re := regexp.MustCompile("\\{\\{(.*?)\\}\\}\\n?")
+	// 	out = re.ReplaceAllString(out, "")
+	// }
+
+	if cfg.StripComments {
+		re := regexp.MustCompile("<!--(.*?)-->\\n?")
 		out = re.ReplaceAllString(out, "")
 	}
 
