@@ -7,15 +7,27 @@ import (
 	"regexp"
 )
 
-type Article struct {
-	XMLName xml.Name
-	Content string `xml:"query>pages>page>revisions>rev"`
+const (
+	missingMarker = "NO"
+)
+
+type PageMeta struct {
+	Id           int    `xml:"pageid,attr"`
+	Content      string `xml:"revisions>rev"`
+	IsMissingRaw string `xml:"missing,attr"`
+	IsMissing    bool   `xml:"-"`
 }
 
-func PostProcess(content string, cfg config.Config) string {
+type ArticleMeta struct {
+	XMLName xml.Name
+	// Content string `xml:"query>pages>page>revisions>rev"`
+	Page PageMeta `xml:"query>pages>page"`
+}
+
+func PostProcess(content string, cfg config.Config) (ArticleMeta, string) {
 	parsed := parseXml(content)
 
-	out := parsed.Content
+	out := parsed.Page.Content
 
 	if cfg.StripInterwiki {
 		out = stripInterwiki(out)
@@ -36,16 +48,20 @@ func PostProcess(content string, cfg config.Config) string {
 		out = re.ReplaceAllString(out, "")
 	}
 
-	return out
+	return parsed, out
 }
 
-func parseXml(xmlStr string) Article {
-	a := Article{}
+func parseXml(xmlStr string) ArticleMeta {
+	p := PageMeta{IsMissingRaw: missingMarker}
+	a := ArticleMeta{Page: p}
 
 	errXml := xml.Unmarshal([]byte(xmlStr), &a)
 	if errXml != nil {
 		log.Fatal(errXml)
 	}
+
+	// interpret IsMissingRaw manually (couldn't do it declaratively with go xml unmarshaller)
+	a.Page.IsMissing = !(a.Page.IsMissingRaw == missingMarker)
 
 	return a
 }
