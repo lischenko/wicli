@@ -6,12 +6,17 @@ import (
 	"os"
 	prc "processing"
 	ret "retriever"
+	"strings"
 )
 
 const (
 	RET_OK      = 0
 	RET_USAGE   = 1
 	RET_MISSING = 2
+)
+
+const (
+	REDIRECT_MARKER = "#REDIRECT "
 )
 
 func main() {
@@ -24,6 +29,13 @@ func main() {
 
 	query := os.Args[len(os.Args)-1]
 
+	articleText := getArticleText(cfg, query)
+
+	fmt.Printf("%s", articleText)
+	os.Exit(RET_OK)
+}
+
+func getArticleText(cfg config.Config, query string) string {
 	body := ret.Retrieve(cfg, query)
 
 	//it is easy with raw option - just print it and we are done
@@ -40,6 +52,11 @@ func main() {
 		os.Exit(RET_MISSING)
 	}
 
-	fmt.Printf("%s", articleText)
-	os.Exit(RET_OK)
+	if cfg.FollowRedirects && strings.HasPrefix(articleText, REDIRECT_MARKER) {
+		query := articleText[len(REDIRECT_MARKER):]
+		fmt.Fprintf(os.Stderr, "Redirecting to \"%s\"\n", query)
+		return getArticleText(cfg, query)
+	}
+
+	return articleText
 }

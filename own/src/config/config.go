@@ -9,6 +9,7 @@ type Config struct {
 	StripComments   bool
 	StripInterwiki  bool
 	Raw             bool
+	FollowRedirects bool
 }
 
 var cfg Config
@@ -20,6 +21,7 @@ func init() {
 	flag.BoolVar(&cfg.Raw, "raw", false, "Supresses all post-processing")
 	flag.BoolVar(&cfg.StripInterwiki, "stripInterwiki", true, "Whether or not to strip interwiki (language) links")
 	flag.BoolVar(&cfg.StripComments, "stripComments", true, "Whether or not to strip comments")
+	flag.BoolVar(&cfg.FollowRedirects, "followRedirects", true, "Whether or not to follow redirects")
 
 	flag.Parse()
 }
